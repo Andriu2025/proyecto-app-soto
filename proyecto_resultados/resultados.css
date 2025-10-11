@@ -1,0 +1,185 @@
+/* ============================
+   Scoped CSS para #resultados
+   ============================ */
+
+#resultados {
+  box-sizing: border-box;
+  font-family: inherit;
+  color: inherit;
+  padding: 18px;
+
+  /* ✅ Ajuste para que no ocupe toda la pantalla */
+  max-height: 85vh;        /* un poco más de espacio que antes */
+  overflow-y: auto;        /* si hay mucho contenido, activa scroll */
+  overflow-x: auto;        /* evita desbordes horizontales en pantallas chicas */
+  margin-bottom: 20px;     /* separa del bloque de historial */
+}
+
+/* tabla principal de resultados */
+#resultados table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  table-layout: auto;
+}
+
+#resultados thead th {
+  background: #f4f4f4;
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-weight: 700;
+}
+
+#resultados tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+/* ✅ Numeración automática de filas */
+#resultados tbody {
+  counter-reset: fila; /* resetea el contador al inicio del tbody */
+}
+
+#resultados tbody tr {
+  counter-increment: fila; /* suma 1 en cada fila */
+}
+
+#resultados tbody tr td:first-child::before {
+  content: counter(fila) ". "; /* muestra el número */
+  font-weight: bold;
+  margin-right: 6px;
+  color: #555;
+}
+
+/* pie de tabla de resultados (totales) */
+#resultados tfoot td {
+  font-weight: 700;
+  padding: 10px;
+  border-top: 2px solid #ddd;
+  background: #fafafa;
+}
+
+/* inputs / botones que haya dentro de resultados */
+#resultados button,
+#resultados input,
+#resultados select,
+#resultados label {
+  box-sizing: border-box;
+  font-family: inherit;
+  color: inherit;
+}
+
+/* botones con estilo solo para resultados (no pisa botones globales) */
+#resultados .btn {
+  display:inline-block;
+  padding:8px 12px;
+  border-radius:6px;
+  border: none;
+  cursor:pointer;
+}
+
+/* ajuste de responsividad dentro de resultados */
+@media (max-width: 900px) {
+  #resultados table { font-size: 14px; }
+}
+
+/* contenedor del botón */
+#resultados .acciones {
+  display: flex;
+  justify-content: flex-start; /* alinea a la izquierda */
+  margin: 10px 0;              /* espacio arriba y abajo */
+}
+
+/* botón dentro de resultados */
+#resultados .acciones .btn {
+  display: inline-block;
+  width: auto;             /* 🚀 solo ocupa lo que mide el texto */
+  min-width: unset;        /* evita que se fije un mínimo */
+  padding: 8px 14px;       /* tamaño reducido */
+  background: #28a745;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* efecto al pasar el mouse */
+#resultados .acciones .btn:hover {
+  background: #218838;
+}
+
+
+/* ============================
+   Scoped CSS para #historialGestiones
+   ============================ */
+
+#historialGestiones {
+  box-sizing: border-box;
+  font-family: inherit;
+  color: inherit;
+  padding: 18px;
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+
+  /* ✅ límite de altura */
+  max-height: 65vh;       /* un poco más que antes */
+  overflow-y: auto;       /* activa scroll si es necesario */
+  margin-top: 10px;       /* separa un poco del bloque anterior */
+}
+
+/* título */
+#historialGestiones h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* subtítulos (año - mes) */
+#historialGestiones h4 {
+  font-size: 16px;
+  margin: 10px 0 6px 0;
+  color: #555;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+}
+
+/* lista de gestiones */
+#historialGestiones ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#historialGestiones li {
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  background: #f9f9f9;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+/* checkbox alineado */
+#historialGestiones li input[type="checkbox"] {
+  margin-left: 8px;
+  transform: scale(1.1);
+}
+
+/* fecha al lado derecho */
+#historialGestiones .fecha {
+  font-size: 12px;
+  color: #777;
+}

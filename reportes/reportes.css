@@ -1,0 +1,111 @@
+/* ============================
+   Contenedor principal
+   ============================ */
+#reportes {
+  padding: 18px;
+  color: #222;
+  box-sizing: border-box;
+  height: calc(100vh - 50px); /* ocupa pantalla */
+  overflow-y: auto; /* scroll vertical si hay mucho contenido */
+  background: #c7c9cb;
+}
+
+/* Títulos */
+#reportes h2 {
+  margin-bottom: 12px;
+  color: #333;
+}
+
+/* Botón volver */
+.acciones {
+  margin-bottom: 12px;
+}
+
+/* Panel de exportación */
+.reportes-top {
+  margin: 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.export-btn {
+  background: #0d6efd;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.export-btn:hover {
+  background: #0a58ca;
+}
+
+/* ============================
+   Hoja única que se alarga
+   ============================ */
+.reportes-hoja-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  gap: 20px; 
+  padding: 20px;
+}
+
+.reportes-hoja {
+  width: 230mm;       /* ancho tipo A4 */
+  min-height: 297mm;  /* altura mínima tipo hoja A4 */
+  padding: 20px;
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  border-radius: 6px;
+
+  height: auto;       /* se alarga automáticamente */
+  overflow: visible;  /* ❌ sin scroll interno */
+  box-sizing: border-box;
+}
+
+/* ============================
+   Contenedores internos
+   ============================ */
+.reportes-tabla,
+.reportes-gestiones,
+.reportes-estadisticas {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* ============================
+   Tablas dentro de reportes
+   ============================ */
+.reportes-hoja table {
+  width: 100%;
+  border-collapse: collapse; 
+  margin: 10px 0;
+  font-size: 14px;
+  table-layout: auto;
+}
+
+.reportes-hoja th,
+.reportes-hoja td {
+  border: 1px solid #555; 
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.reportes-hoja th {
+  background-color: #f0f0f0;
+  font-weight: 600;
+}
+
+.reportes-hoja td {
+  background-color: #fff;
+}
+
+
+

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cabaña de Toros</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="stylesheet" href="proyecto app(animales css js)/css/animales.css">
+    <link rel="stylesheet" href="proyecto_resultados/resultados.css">
+    <link rel="stylesheet" href="estadisticas/estadisticas.css">
+    <link rel="stylesheet" href="reportes/reportes.css">
+    <link rel="icon" type="image/png" href="imagenes/logo soto.png">
+
+  </head>
+  <body>
+
+<!-- Fondo con slideshow -->
+<div class="fondo-slideshow"></div>
+<div class="overlay"></div>
+
+<div class="contenedor1" id="contenedor1">
+    
+    <!-- FORMULARIO DE LOGIN -->
+    <div id="loginBox">
+      <h2>Iniciar Sesión</h2>
+      <form id="loginForm">
+        <input type="text" id="usuario" placeholder="Usuario" required>
+        <input type="password" id="contraseña" placeholder="Contraseña" required>
+        <button type="submit">Entrar</button>
+      </form>
+      <div class="switch">
+        ¿No tienes cuenta? <a href="#" onclick="mostrarRegistro()">Regístrate</a>
+      </div>
+    </div>
+
+    <!-- FORMULARIO DE REGISTRO -->
+    <div id="registerBox" style="display: none;">
+      <h2>Registro</h2>
+      <form id="registerForm">
+        <input type="text" placeholder="Usuario nuevo" required>
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Contraseña" required>
+        <input type="password" placeholder="Confirmar contraseña" required>
+        <button type="submit">Registrarse</button>
+      </form>
+      <div class="switch">
+        ¿Ya tienes cuenta? <a href="#" onclick="mostrarLogin()">Inicia sesión</a>
+      </div>
+    </div>
+
+  </div>
+
+<!--  MENÚ PRINCIPAL (oculto hasta iniciar sesión) -->
+  <div class="menu" id="menuPrincipal" style="display:none;">
+    <h2>Menú Principal</h2>
+    <ul>
+      <li><a href="#" onclick="mostrarAnimales()">🐂 Gestión de Animales</a></li>
+      <li><a href="#">📋 Gestión de Compradores</a></li>
+      <li><a href="#">🐎 Gestión de Remates</a></li>
+      <li><a href="#" onclick="mostrarEstadisticas()">📈 Estadísticas 📉</a></li>
+      <li><a href="#" onclick="mostrarResultados()">📊 Resultados</a></li>
+      <li><a href="#" onclick="mostrarReportes()">📑 Reportes</a></li>
+      <li><a href="#" onclick="cerrarSesion()"> Cerrar Sesión</a></li>
+    </ul>
+  </div>
+
+
+<!-- =============================
+       GESTIÓN DE ANIMALES
+       ============================= -->
+  <section id="animales" style="display:none;">
+    <h2>🐮 Gestión de Animales</h2>
+    <!-- Nota: botón Volver ahora usa id para que app.js lo controle -->
+    <button id="volverMenuAnimales">Volver al menú</button>
+
+    <!-- Formulario para cargar animales -->
+    <form id="animalForm">
+      <label>Comprador: <input type="text" id="comprador"></label>
+      <label>Categoría:
+        <select id="categoria" required>
+          <option value="">-- Seleccionar --</option>
+          <option value="Vaquillona angus">Vaquillona angus</option>
+          <option value="Vaquillona Hereford">Vaquillona Hereford</option>
+          <option value="Toros angus">Toros angus</option>
+          <option value="Toros Hereford">Toros Hereford</option>
+          <option value="Caballos">caballos</option>
+        </select>
+      </label>
+      <label>Código Cat.: <input type="text" id="codigoCategoria" placeholder="Ej: V.H., T.A."></label>
+      <label>Corral: <input type="text" id="corral"></label>
+      <label>Cantidad: <input type="number" id="cantidad" min="1" value="1" required></label>
+      <label>Números (Caravanas): <input type="text" id="caravana" placeholder="Ej: 324-235-345"></label>
+      <label>Precio por Cabeza: <input type="number" id="precio" step="0.01" required></label>
+      <label>Importe en Kg: <input type="number" id="impKg" step="0.01"></label>
+      <label>Forma de Pago: <input type="text" id="formaPago"></label>
+      <label>CUIT: <input type="text" id="cuit"></label>
+      <label>Precio x Combustible: <input type="number" id="precioCombustible" step="0.01"></label>
+      <label>Lugar de Entrega: <input type="text" id="lugarEntrega"></label>
+      <label>Localidad: <input type="text" id="localidad"></label>
+      <button type="submit">➕ Agregar Animal</button>
+    </form>
+
+    <!-- Tabla de animales -->
+    <table id="animalesTable">
+      <thead>
+        <tr>
+          <th>Comprador</th><th>Categoría</th><th>Código Cat.</th><th>Corral</th><th>Cant.</th><th>Números</th>
+          <th>$ por Cabeza</th><th>Imp.$</th><th>Imp.Kg</th><th>Forma de Pago</th><th>CUIT</th>
+          <th>Precio x Combustible</th><th>Lugar de Entrega</th><th>Localidad</th><th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Aquí se cargan los animales -->
+      </tbody>
+      <tfoot>
+        <tr><td colspan="14">Total $</td><td id="total">$ 0,00</td></tr>
+        <tr><td colspan="14">Promedio $</td><td id="promedio">$ 0,00</td></tr>
+        <tr><td colspan="14">Cantidad Total de Animales</td><td id="totalCantidad">0</td></tr>
+        <tr><td colspan="14">Total Kg</td><td id="totalKg">0</td></tr>
+        <tr><td colspan="14">Promedio Kg</td><td id="promedioKg">0</td></tr>
+      </tfoot>
+    </table>
+
+    <!-- Botón de guardar gestión -->
+    <div id="gestionBotones" style="margin-top:10px;">
+      <button id="guardarGestion">💾 Guardar Gestión</button>
+      <button id="abrirSeleccionReportes">📊 Agregar a Reportes</button>
+    </div>
+
+    <!-- Historial de gestiones -->
+    <section id="historial">
+      <h3>Historial de Gestiones</h3>
+      <div id="listaHistorial"></div>
+    </section>
+  </section>
+
+  <!-- =============================
+       RESULTADOS
+       ============================= -->
+  <div id="resultados" style="display:none;">
+    <h2>📊 Resultados del Remate</h2>
+    <!-- Volver al menú desde resultados -->
+    <div class="acciones">
+    <button id="volverMenuResultados" class="btn">Volver al Menú</button>
+    </div>
+
+    <table id="tablaResultados">
+      <thead>
+        <tr>
+          <th>Detalle</th>
+          <th>Cantidad</th>
+          <th>Importe en $</th>
+          <th>$ convertidos en Kg</th>
+          <th>Promedio $</th>
+          <th>Promedio Kg</th>
+          <th>Kilos Reales Vendidos</th>
+          <th>Precio x Kg</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot></tfoot>
+    </table>
+
+    <div id="accionesReportes" style="margin-top:15px; text-align:center;">
+     <button id="btnAgregarAReportes">📋 Agregar a Reportes</button>
+     <button id="btnConfirmarAgregar" style="display:none;">✅ Confirmar</button>
+     <button id="btnCancelarAgregar" style="display:none;">❌ Cancelar</button>
+    </div>
+
+    
+    <!-- Historial de gestiones -->
+  <h3>📜 Historial de Gestiones</h3>
+  <div id="historialGestiones"></div>
+   
+  </div>
+
+<!-- =============================
+     SECCIÓN: Estadísticas
+     ============================= -->
+<div id="estadisticas" style="display:none;">
+  <h2>📈 Estadísticas 📉</h2>
+
+  <!-- Botón volver debajo del título -->
+  <div class="acciones">
+    <button id="volverMenuEstadisticas" class="btn volver-btn" type="button">⬅ Volver al Menú</button>
+  </div>
+
+  <!-- Filtros arriba -->
+  <div class="estadisticas-top">
+    <div class="filtros">
+      <label>Año:
+        <select id="filtroAno"></select>
+      </label>
+      <label>Mes:
+        <select id="filtroMes"><option value="">Todos</option></select>
+      </label>
+      <button id="btnAplicar" type="button" class="btn">Aplicar</button>
+    </div>
+
+    <div class="filtros">
+      <label>Desde:
+        <select id="filtroMesDesde"><option value="">Mes inicio</option></select>
+      </label>
+      <label>Hasta:
+        <select id="filtroMesHasta"><option value="">Mes fin</option></select>
+      </label>
+      <button id="btnAplicarRango" type="button" class="btn">Aplicar Rango</button>
+    </div>
+  </div>
+
+  <div class="estadisticas-grid">
+    <!-- Ranking -->
+    <div class="card card-ranking">
+      <div class="ranking-header">
+        <button id="rankingPrev" class="nav-btn">⬅</button>
+        <h3 id="rankingTitulo">🏆 Ranking - Septiembre 2025</h3>
+        <button id="rankingNext" class="nav-btn">➡</button>
+      </div>
+
+      <div class="ranking-wrap" id="rankingScroll">
+        <table id="tablaRanking" class="tabla-ranking">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Comprador</th>
+              <th>Toros Angus</th>
+              <th>Toros Hereford</th>
+              <th>Vaq. Angus</th>
+              <th>Vaq. Hereford</th>
+              <th>Caballos</th>
+              <th>Total Anim.</th>
+              <th>Total $</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="9">No hay datos aún.</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Animales más vendidos: dentro del mismo card-ranking -->
+        <div class="card card-top-animales" style="margin-top:12px; padding:10px;">
+          <h4 style="margin:0 0 8px 0;">🐂 Animales más vendidos</h4>
+          <div class="top-animales-wrap" style="max-height:180px; overflow:auto;">
+            <table id="tablaAnimalesMasVendidos" class="tabla-top-animales" style="width:100%; border-collapse:collapse;">
+              <thead>
+                <tr>
+                  <th style="text-align:left; padding:6px 8px;">#</th>
+                  <th style="text-align:left; padding:6px 8px;">Animal</th>
+                  <th style="text-align:left; padding:6px 8px;">Total Vendidos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="3" style="padding:8px; color:#666;">No hay datos aún.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="right-column">
+      <div class="card">
+        <div class="ventas-header">
+          <button id="ventasPrev" class="nav-btn">⬅</button>
+          <h3 id="ventasTitulo">📊 Ventas por Mes y Año - 2025</h3>
+          <button id="ventasNext" class="nav-btn">➡</button>
+        </div>
+        <div class="chart-wrap"><canvas id="graficoVentas"></canvas></div>
+        <div id="resumenVentas" class="resumen-ventas"></div>
+      </div>
+
+      <div class="card">
+        <div class="dinero-header">
+          <button id="dineroPrev" class="nav-btn">⬅</button>
+          <h3 id="dineroTitulo">💰 Dinero Acumulado - 2025</h3>
+          <button id="dineroNext" class="nav-btn">➡</button>
+        </div>
+        <div class="chart-wrap"><canvas id="graficoDinero"></canvas></div>
+        <div id="resumenDinero" class="resumen-dinero"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================
+     SECCIÓN: Reportes
+     ============================= -->
+<div id="reportes" style="display:none;">
+  <h2>📑 Reportes</h2>
+
+  <!-- Botón volver -->
+  <div class="acciones">
+    <button id="volverMenuReportes" class="btn volver-btn" type="button">⬅ Volver al Menú</button>
+  </div>
+
+  <!-- Panel de exportación -->
+  <div class="reportes-top">
+    <button id="btnExportPdf" class="btn export-btn">📄 Exportar PDF</button>
+  </div>
+
+  <!-- Contenedor tipo hoja -->
+  <div class="reportes-hoja-wrap">
+    <div id="reportesHoja" class="reportes-hoja" contenteditable="true">
+      <!-- Contenedores internos para orden -->
+      <div class="reportes-gestiones">
+        <p style="color:#666;">Aquí aparecerán las gestiones agregadas.</p>
+      </div>
+      <div class="reportes-tabla">
+        <p>Aquí aparecerá la tabla de resultados.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+  <!-- =============================
+       SCRIPTS - orden: animales -> resultados -> app
+       ============================= -->
+  <script src="proyecto app(animales css js)/js/animales.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="proyecto_resultados/resultados.js"></script>
+<script src="reportes/reportes.js"></script>   <!-- primero se carga esto -->
+<script src="estadisticas/estadisticas.js"></script> <!-- luego esto -->
+<script src="app.js"></script>
+
+  </body>
+</html>

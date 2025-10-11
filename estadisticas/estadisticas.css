@@ -1,0 +1,207 @@
+/* ============================
+   Estadísticas - estilos
+   ============================ */
+
+#estadisticas {
+  padding: 18px;
+  color: #222;
+  overflow-y: auto;   /* scroll vertical general */
+  max-height: 90vh;   /* nunca supera el alto de pantalla */
+  box-sizing: border-box;
+}
+
+/* top filtros */
+.estadisticas-top {
+  margin-bottom: 12px;
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px; /* 👈 separa selects de botones */
+}
+
+.filtros label {
+  margin-right:6px;
+  font-weight:600;
+  color:#111;
+}
+
+.filtros select {
+  padding:6px;
+  border-radius:6px;
+  border:1px solid #ddd;
+}
+
+/* botones de aplicar */
+#btnAplicar,
+#btnAplicarRango {
+  background:#28a745;
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:700;
+  flex-shrink: 0;       /* 👈 evita que se estiren */
+}
+
+#btnAplicar:hover,
+#btnAplicarRango:hover { background:#218838; }
+
+#btnAplicarRango {
+  background:#0d9ad8;   /* azulito para diferenciar */
+}
+#btnAplicarRango:hover { background:#0c7fb2; }
+
+/* layout: izquierda + derecha */
+.estadisticas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.9fr; /* izquierda más angosta */
+  gap: 18px;
+  align-items: start;
+  overflow: hidden;
+}
+
+/* tarjetas */
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+
+/* ranking */
+.card-ranking { 
+  height: 100%; 
+  display:flex;
+  flex-direction:column;
+}
+.ranking-wrap { 
+  overflow:auto;          /* scroll si excede */
+  max-height: 60vh;       /* no pasa de pantalla */
+  padding-right:6px; 
+}
+.tabla-ranking {
+  width:100%;
+  border-collapse:collapse;
+  min-width: 700px;       /* si hay muchas columnas -> scroll horizontal */
+}
+.tabla-ranking th, .tabla-ranking td {
+  padding:8px 6px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+  font-size:13px;
+  white-space: nowrap;    /* evita que se rompan las celdas */
+}
+.tabla-ranking thead th {
+  background:#f5f5f5;
+  font-weight:700;
+  position: sticky; 
+  top: 0;                 /* header fijo al hacer scroll */
+  z-index: 2;
+}
+.tabla-ranking tbody tr:nth-child(odd) { background: #fafafa; }
+
+/* Right column - stacked */
+.right-column {
+  display:flex;
+  flex-direction:column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+/* canvas responsive con scroll si se pasa */
+.right-column .card {
+  max-height: 320px;       /* límite por gráfico */
+  overflow: auto;          /* scroll interno */
+}
+.right-column canvas {
+  width:100% !important;
+  height: 260px !important;
+  display:block;
+}
+
+/* separador de año en gráfico de dinero */
+.chart-year-separator {
+  border-top: 2px dashed #999;
+  margin: 8px 0;
+  opacity:0.6;
+  text-align:center;
+  font-size:12px;
+  color:#555;
+}
+
+/* acciones (ej: volver) */
+#estadisticas .acciones {
+  margin-top: 12px;
+  display:flex;
+  justify-content:flex-start;
+}
+
+/* Botón volver al menú */
+.volver-btn {
+  background:#28a745;
+  color:#fff;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:600;
+  width: auto !important;     /* 👈 nunca ocupa todo el ancho */
+  display: inline-block;      /* 👈 ajusta al contenido */
+}
+.volver-btn:hover { background:#218838; }
+
+/* Header de las tarjetas con navegación */
+.ranking-header,
+.ventas-header,
+.dinero-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+
+.ranking-header h3,
+.ventas-header h3,
+.dinero-header h3 {
+  flex:1;
+  text-align:center;
+  margin:0;
+}
+
+/* Botones izquierda/derecha */
+.nav-btn {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  width: 40px;        
+  height: 28px;       
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+.nav-btn:hover { background:#218838; }
+
+/* Responsivo */
+@media (max-width: 900px) {
+  .estadisticas-grid {
+    grid-template-columns: 1fr;
+  }
+  .right-column canvas { height:220px !important; }
+  .ranking-wrap { max-height: 40vh; }
+}
+
+
+
+

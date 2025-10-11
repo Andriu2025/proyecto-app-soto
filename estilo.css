@@ -1,0 +1,129 @@
+/* ==== Fondo con slideshow de imágenes ==== */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* evita scroll */
+  position: relative;
+  background: transparent; /* 👈 en vez del gris */
+}
+
+/* Contenedor del slideshow */
+.fondo-slideshow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2; /* queda detrás de todo */
+  background-size: cover;
+  background-position: center;
+  animation: cambioFondo 30s infinite;
+}
+
+/* Overlay oscuro sobre el fondo */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5); /* negro transparente */
+  z-index: -1;
+}
+
+/* Animación: cambiar imágenes */
+@keyframes cambioFondo {
+  0%   { background-image: url("imagenes/img1.png"); }
+  20%  { background-image: url("imagenes/img2.png"); }
+  40%  { background-image: url("imagenes/img3.png"); }
+  60%  { background-image: url("imagenes/img4.png"); }
+  80%  { background-image: url("imagenes/img5.png"); }
+  100% { background-image: url("imagenes/img1.png"); }
+}
+
+/* ==== Login / Registro ==== */
+.contenedor1 {
+  background: rgba(255, 255, 255, 0.2); /* blanco transparente */
+  backdrop-filter: blur(10px); /* efecto vidrio esmerilado */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  width: 300px;
+  text-align: center;
+}
+
+h2 {
+  margin-bottom: 15px;
+  color: #fff; /* blanco sobre fondo oscuro */
+}
+
+input {
+  width: 90%;
+  padding: 8px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  width: 95%;
+  padding: 10px;
+  border: none;
+  background: #2c7;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #1a5;
+}
+
+.switch {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #fff; /* blanco para que se vea */
+}
+
+.switch a {
+  color: #2c7;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* ==== Menú (todavía igual) ==== */
+.menu ul {
+  list-style: none;
+  padding: 0;
+}
+
+.menu ul li {
+  margin: 10px 0;
+}
+
+.menu ul li a {
+  display: block;
+  padding: 10px;
+  background: #eeeeee ;
+  border-radius: 5px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.menu ul li a:hover {
+  background: #2c7;
+  color: white;
+}
+
+
+
+
+
+

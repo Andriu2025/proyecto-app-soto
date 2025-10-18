@@ -342,25 +342,47 @@ function recargarTodo() {
 }
 
 // -----------------------------
-// AGREGAR A REPORTES (reemplazar este bloque en resultados.js)
+// AGREGAR A REPORTES (bloque definitivo, compatible con CSS !important)
+// Reemplazar cualquier bloque anterior parecido por este
 // -----------------------------
 document.addEventListener("DOMContentLoaded", () => {
   const btnAgregar = document.getElementById("btnAgregarAReportes");
   const btnConfirmar = document.getElementById("btnConfirmarAgregar");
   const btnCancelar = document.getElementById("btnCancelarAgregar");
 
+  // Si no existen, salir sin que rompa nada
   if (!btnAgregar || !btnConfirmar || !btnCancelar) return;
 
+  // -- Estado inicial: forzar ocultar confirmar/cancelar usando inline !important
+  btnConfirmar.style.setProperty("display", "none", "important");
+  btnCancelar.style.setProperty("display", "none", "important");
+  // Aseguramos que el botón Agregar esté visible inicialmente
+  btnAgregar.style.setProperty("display", "inline-flex", "important");
+
+  // Al presionar "Agregar a Reportes"
   btnAgregar.addEventListener("click", () => {
-    btnConfirmar.style.display = "inline-block";
-    btnCancelar.style.display = "inline-block";
+    // Ocultamos el botón principal (forzado)
+    btnAgregar.style.setProperty("display", "none", "important");
+
+    // Mostramos confirmar y cancelar (forzado inline con !important)
+    btnConfirmar.style.setProperty("display", "inline-flex", "important");
+    btnCancelar.style.setProperty("display", "inline-flex", "important");
+
+    // (si querés, podés añadir focus)
+    try { btnConfirmar.focus(); } catch(e) {}
   });
 
+  // Al presionar "Cancelar"
   btnCancelar.addEventListener("click", () => {
-    btnConfirmar.style.display = "none";
-    btnCancelar.style.display = "none";
+    // Ocultar botones secundarios (forzado)
+    btnConfirmar.style.setProperty("display", "none", "important");
+    btnCancelar.style.setProperty("display", "none", "important");
+
+    // Volver a mostrar botón Agregar
+    btnAgregar.style.setProperty("display", "inline-flex", "important");
   });
 
+  // Al presionar "Confirmar"
   btnConfirmar.addEventListener("click", () => {
     const tabla = document.getElementById("tablaResultados");
     if (!tabla) {
@@ -368,23 +390,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Limpia botones visuales inmediatamente
-    btnConfirmar.style.display = "none";
-    btnCancelar.style.display = "none";
+    // Volver al estado inicial (ocultar secundarios, mostrar agregar)
+    btnConfirmar.style.setProperty("display", "none", "important");
+    btnCancelar.style.setProperty("display", "none", "important");
+    btnAgregar.style.setProperty("display", "inline-flex", "important");
 
-    // Tomamos el HTML de la tabla (solo la tabla)
+    // Lógica original: tomar HTML y enviarlo a reportes (idem a tu código)
     const tablaHTML = tabla.outerHTML;
 
-    // Si la función agregarReporte está disponible (reportes.js cargado en la misma página),
-    // la usamos directamente para insertar la tabla en la sección de reportes.
     if (typeof agregarReporte === "function") {
       try {
         agregarReporte(tablaHTML, "tabla");
-        // Mostrar la sección de reportes (misma página)
         if (typeof mostrarReportes === "function") {
           mostrarReportes();
         } else {
-          // si no existe mostrarReportes, intentamos mostrar la sección manualmente
           const reportesEl = document.getElementById("reportes");
           const resultadosEl = document.getElementById("resultados");
           const menuEl = document.getElementById("menuPrincipal");
@@ -394,21 +413,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       } catch (err) {
         console.error("Error agregando reporte directamente:", err);
-        // fallback a localStorage
         localStorage.setItem("tablaResultadosParaReportes", tablaHTML);
         if (typeof mostrarReportes === "function") mostrarReportes();
       }
       return;
     }
 
-    // Si no existe agregarReporte (por orden de carga), usamos localStorage como fallback
+    // Fallback si no existe agregarReporte
     localStorage.setItem("tablaResultadosParaReportes", tablaHTML);
-
-    // Intentamos mostrar la sección de reportes si la función existe
     if (typeof mostrarReportes === "function") {
       mostrarReportes();
     } else {
-      // si no, mostramos la sección de reportes manualmente
       const reportesEl = document.getElementById("reportes");
       const resultadosEl = document.getElementById("resultados");
       const menuEl = document.getElementById("menuPrincipal");
@@ -418,3 +433,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+

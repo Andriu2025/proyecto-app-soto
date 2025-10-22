@@ -382,6 +382,58 @@ function mostrarHistorial() {
   });
 
   // =============================
+  // BUSCADOR POR MES Y AÑO
+  // =============================
+  let buscadorContainer = document.getElementById("buscadorHistorial");
+  if (!buscadorContainer) {
+    buscadorContainer = document.createElement("div");
+    buscadorContainer.id = "buscadorHistorial";
+    buscadorContainer.style.marginBottom = "15px";
+    buscadorContainer.innerHTML = `
+      <label>Buscar por Mes:
+        <select id="filtroMes">
+          <option value="">-- Todos --</option>
+          <option value="Enero">Enero</option>
+          <option value="Febrero">Febrero</option>
+          <option value="Marzo">Marzo</option>
+          <option value="Abril">Abril</option>
+          <option value="Mayo">Mayo</option>
+          <option value="Junio">Junio</option>
+          <option value="Julio">Julio</option>
+          <option value="Agosto">Agosto</option>
+          <option value="Septiembre">Septiembre</option>
+          <option value="Octubre">Octubre</option>
+          <option value="Noviembre">Noviembre</option>
+          <option value="Diciembre">Diciembre</option>
+        </select>
+      </label>
+      <label style="margin-left:10px;">Año:
+        <input type="number" id="filtroAnio" placeholder="Ej: 2025" style="width:80px;">
+      </label>
+      <button id="btnFiltrarHistorial">🔍 Buscar</button>
+      <button id="btnLimpiarFiltro">🧹 Limpiar</button>
+    `;
+
+    document.getElementById("historial").insertBefore(
+      buscadorContainer,
+      document.getElementById("listaHistorial")
+    );
+
+    document.getElementById("btnFiltrarHistorial").addEventListener("click", () => {
+      const mes = document.getElementById("filtroMes").value;
+      const anio = document.getElementById("filtroAnio").value;
+      filtrarHistorial(mes, anio);
+    });
+
+    document.getElementById("btnLimpiarFiltro").addEventListener("click", () => {
+      document.getElementById("filtroMes").value = "";
+      document.getElementById("filtroAnio").value = "";
+      mostrarHistorial(); // recarga completo
+    });
+  }
+
+
+  // =============================
   // Panel Confirmar y Cancelar
   // =============================
   let panelReportes = document.getElementById("panelSeleccionReportes");
@@ -622,5 +674,26 @@ window.eliminarGestion = function (id) {
 };
 
 
+// =============================
+// FUNCIÓN FILTRAR HISTORIAL
+// =============================
+function filtrarHistorial(mes, anio) {
+  let gestiones = JSON.parse(localStorage.getItem("gestiones")) || [];
+  let filtradas = gestiones;
+
+  if (mes) filtradas = filtradas.filter(g => g.mes === mes);
+  if (anio) filtradas = filtradas.filter(g => g.anio == anio);
+
+  if (filtradas.length === 0) {
+    alert("No se encontraron gestiones para ese mes/año.");
+    return;
+  }
+
+  // mostrar solo las filtradas (reutilizando el render)
+  const original = gestiones;
+  window.gestiones = filtradas;
+  mostrarHistorial();
+  window.gestiones = original; // restaurar
+}
 
 

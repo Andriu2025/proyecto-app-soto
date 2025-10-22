@@ -45,7 +45,7 @@
 }
 
 /* ============================
-   Hoja única que se alarga
+   Reportes - formato tipo hoja A4 expandible
    ============================ */
 .reportes-hoja-wrap {
   display: flex;
@@ -53,19 +53,36 @@
   align-items: center; 
   gap: 20px; 
   padding: 20px;
+  width: 100%;
+  overflow: visible !important;
 }
 
+/* ============================
+   Cada hoja (tipo A4)
+   ============================ */
 .reportes-hoja {
-  width: 230mm;       /* ancho tipo A4 */
-  min-height: 297mm;  /* altura mínima tipo hoja A4 */
-  padding: 20px;
+  width: 230mm;        /* ancho visual aproximado tipo A4 */
+  min-height: 297mm;   /* altura mínima de una hoja */
+  padding: 20mm;
   background: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   border-radius: 6px;
-
-  height: auto;       /* se alarga automáticamente */
-  overflow: visible;  /* ❌ sin scroll interno */
   box-sizing: border-box;
+
+  /* comportamiento */
+  height: auto; 
+  overflow: visible; /* sin scroll interno */
+  page-break-after: always;
+  page-break-inside: avoid;
+
+  position: relative;
+  padding-bottom: 40px; /* margen extra inferior */
+}
+
+.reportes-hoja::after {
+  content: "";
+  display: block;
+  height: 1px; /* asegura detección del final de la hoja */
 }
 
 /* ============================
@@ -76,6 +93,7 @@
 .reportes-estadisticas {
   width: 100%;
   margin-bottom: 20px;
+  page-break-inside: avoid;
 }
 
 /* ============================
@@ -83,7 +101,7 @@
    ============================ */
 .reportes-hoja table {
   width: 100%;
-  border-collapse: collapse; 
+  border-collapse: collapse;
   margin: 10px 0;
   font-size: 14px;
   table-layout: auto;
@@ -91,7 +109,7 @@
 
 .reportes-hoja th,
 .reportes-hoja td {
-  border: 1px solid #555; 
+  border: 1px solid #555;
   padding: 6px 8px;
   text-align: left;
   vertical-align: middle;
@@ -107,5 +125,28 @@
   background-color: #fff;
 }
 
+/* ============================
+   Ajuste final PDF / visualización
+   ============================ */
+#reportesHoja {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  overflow: visible !important;
+}
 
+/* === Ajuste específico para html2pdf (evita cortes laterales) === */
+@media print {
+  .reportes-hoja {
+    width: 210mm !important; /* ancho exacto A4 */
+    min-height: 297mm !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+  }
+}
 
+.reportes-hoja {
+  transform-origin: top left;
+  max-width: 210mm; /* evita que se corte a la mitad */
+  margin: 0 auto;
+}

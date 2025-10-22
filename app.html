@@ -299,13 +299,13 @@
 
   <!-- Contenedor tipo hoja -->
   <div class="reportes-hoja-wrap">
-    <div id="reportesHoja" class="reportes-hoja" contenteditable="true">
+    <div id="reportesHoja" class="reportes-hoja">
       <!-- Contenedores internos para orden -->
-      <div class="reportes-gestiones">
-        <p style="color:#666;">Aquí aparecerán las gestiones agregadas.</p>
-      </div>
       <div class="reportes-tabla">
         <p>Aquí aparecerá la tabla de resultados.</p>
+      </div>
+      <div class="reportes-gestiones">
+        <p style="color:#666;">Aquí aparecerán las gestiones agregadas.</p>
       </div>
     </div>
   </div>
@@ -320,9 +320,12 @@
 <script src="proyecto app(animales css js)/js/animales.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="proyecto_resultados/resultados.js"></script>
-<script src="reportes/reportes.js"></script>   <!-- primero se carga esto -->
-<script src="estadisticas/estadisticas.js"></script> <!-- luego esto -->
+<script src="estadisticas/estadisticas.js"></script>
+<script src="reportes/reportes.js"></script>
 <script src="app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   </body>
 </html>

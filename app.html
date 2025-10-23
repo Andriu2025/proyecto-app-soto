@@ -296,7 +296,23 @@
   <div class="reportes-top">
     <button id="btnExportPdf" class="btn export-btn">📄 Exportar PDF</button>
   </div>
-
+ <!-- ======== PANEL DE EDICIÓN (MINI WORD) ======== -->
+  <div class="miniword-toolbar">
+    <button onclick="document.execCommand('bold', false, '');"><b>B</b></button>
+    <button onclick="document.execCommand('italic', false, '');"><i>I</i></button>
+    <button onclick="document.execCommand('underline', false, '');"><u>U</u></button>
+    <button onclick="document.execCommand('justifyLeft', false, '');">⯇</button>
+    <button onclick="document.execCommand('justifyCenter', false, '');">≡</button>
+    <button onclick="document.execCommand('justifyRight', false, '');">⯈</button>
+    <select id="fontSizeSelect" onchange="document.execCommand('fontSize', false, this.value)">
+      <option value="3">Tamaño</option>
+      <option value="1">Pequeño</option>
+      <option value="3">Normal</option>
+      <option value="5">Grande</option>
+      <option value="7">Muy grande</option>
+    </select>
+  </div>
+  <!-- =============================================== -->
   <!-- Contenedor tipo hoja -->
   <div class="reportes-hoja-wrap">
     <div id="reportesHoja" class="reportes-hoja">

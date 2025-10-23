@@ -399,6 +399,25 @@ async function generarPDFporHojas() {
     // añadimos el final del canvas
     safePositions.push(canvasH);
 
+    // === NUEVO BLOQUE: detectar tablas grandes y forzar salto entre ellas ===
+const tablas = hoja.querySelectorAll(".reportes-tabla table");
+if (tablas.length > 1) {
+  tablas.forEach(tabla => {
+    const rect = tabla.getBoundingClientRect();
+    const topPx = Math.round(tabla.offsetTop * (canvasH / hoja.scrollHeight));
+    const bottomPx = Math.round((tabla.offsetTop + tabla.offsetHeight) * (canvasH / hoja.scrollHeight));
+    
+    // Si la tabla mide más de una hoja, marcamos su parte superior y final
+    if (bottomPx - topPx > altoUtilPx) {
+      safePositions.push(topPx);
+      safePositions.push(bottomPx);
+    } else {
+      // Si la tabla es más chica, forzamos salto antes de la siguiente
+      safePositions.push(bottomPx + 20); // deja un margen entre tablas
+    }
+  });
+}
+
     // normalizar y ordenar posiciones únicas
     const uniq = Array.from(new Set(safePositions)).sort((a,b)=>a-b);
 
@@ -452,7 +471,71 @@ async function generarPDFporHojas() {
   hojaWrap.style.maxWidth = "";
 }
 
+// === Mini Word - Guardado temporal ===
+const reportesHoja = document.getElementById('reportesHoja');
+if (reportesHoja) {
+  // Guardar automáticamente el contenido
+  reportesHoja.addEventListener('input', () => {
+    localStorage.setItem('contenidoReporte', reportesHoja.innerHTML);
+  });
 
+  // Restaurar al cargar la página
+  window.addEventListener('load', () => {
+    const guardado = localStorage.getItem('contenidoReporte');
+    if (guardado) reportesHoja.innerHTML = guardado;
+  });
+}
+
+// =============================
+// DETECTAR Y PRESERVAR TEXTO/TÍTULO MANUAL
+// =============================
+
+function guardarTextoManual() {
+  const hoja = document.querySelector(".reportes-hoja");
+  if (!hoja) return;
+
+  // Solo tomamos texto que esté ANTES de la tabla
+  const bloques = Array.from(hoja.childNodes);
+  let textoManual = "";
+
+  for (const nodo of bloques) {
+    if (nodo.classList && nodo.classList.contains("reportes-tabla")) break;
+    if (nodo.nodeType === Node.ELEMENT_NODE || nodo.nodeType === Node.TEXT_NODE) {
+      textoManual += nodo.outerHTML || nodo.textContent;
+    }
+  }
+
+  if (textoManual.trim()) {
+    localStorage.setItem("textoManualReporte", textoManual);
+  }
+}
+
+function restaurarTextoManual() {
+  const hoja = document.querySelector(".reportes-hoja");
+  if (!hoja) return;
+
+  const textoManual = localStorage.getItem("textoManualReporte");
+  if (!textoManual) return;
+
+  const tabla = hoja.querySelector(".reportes-tabla");
+  if (!tabla) return;
+
+  // Si el texto ya está presente, no duplicar
+  if (hoja.innerHTML.includes(textoManual.trim())) return;
+
+  // Insertamos el texto antes de la tabla
+  const contenedor = document.createElement("div");
+  contenedor.innerHTML = textoManual;
+  hoja.insertBefore(contenedor, tabla);
+}
+
+// Guardar texto manual cuando el usuario escriba
+document.addEventListener("input", (e) => {
+  if (e.target.closest(".reportes-hoja")) guardarTextoManual();
+});
+
+// Restaurar texto al cargar o reordenar
+window.addEventListener("load", restaurarTextoManual);
 
 
 

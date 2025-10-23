@@ -31,6 +31,7 @@
 
 .export-btn {
   background: #0d6efd;
+  width: 190px; /* ajustá según prefieras */
   color: #fff;
   border: none;
   padding: 8px 14px;
@@ -124,6 +125,12 @@
 .reportes-hoja td {
   background-color: #fff;
 }
+/* --- Espaciado y control de salto entre tablas --- */
+.reportes-tabla table {
+  margin-bottom: 30px;      /* deja espacio entre una tabla y otra */
+  page-break-inside: avoid; /* evita que una tabla se corte en dos hojas */
+  display: block;           /* ayuda a que cada tabla se trate como bloque */
+}
 
 /* ============================
    Ajuste final PDF / visualización
@@ -149,4 +156,39 @@
   transform-origin: top left;
   max-width: 210mm; /* evita que se corte a la mitad */
   margin: 0 auto;
+}
+
+/* === Mini Word Toolbar === */
+.miniword-toolbar {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 8px;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin: 10px 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.miniword-toolbar button,
+.miniword-toolbar select {
+  background: #7f7b7b;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.miniword-toolbar button:hover,
+.miniword-toolbar select:hover {
+  background: #e6e6e6;
+}
+
+/* === Reporte editable (hoja tipo Word) === */
+.reportes-hoja[contenteditable="true"] {
+  cursor: text;
 }

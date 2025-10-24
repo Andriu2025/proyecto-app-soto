@@ -184,6 +184,42 @@ window.mostrarReportes = function() {
 };
 
 
+// =============================
+// BOTÓN DE CONTACTO (animado)
+// =============================
+
+// Esperamos a que cargue todo el DOM
+document.addEventListener("DOMContentLoaded", () => {
+  const btnContacto = document.getElementById("btnContacto");
+  const panelContacto = document.getElementById("panelContacto");
+
+  if (btnContacto && panelContacto) {
+    // Mostrar/ocultar con animación
+    btnContacto.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      if (panelContacto.classList.contains("visible")) {
+        // Si ya está visible, lo ocultamos
+        panelContacto.classList.remove("visible");
+        setTimeout(() => (panelContacto.style.display = "none"), 300);
+      } else {
+        // Si no, lo mostramos con animación
+        panelContacto.style.display = "block";
+        setTimeout(() => panelContacto.classList.add("visible"), 10);
+      }
+    });
+
+    // Si se hace clic fuera, se cierra automáticamente
+    document.addEventListener("click", (e) => {
+      if (!btnContacto.contains(e.target) && !panelContacto.contains(e.target)) {
+        if (panelContacto.classList.contains("visible")) {
+          panelContacto.classList.remove("visible");
+          setTimeout(() => (panelContacto.style.display = "none"), 300);
+        }
+      }
+    });
+  }
+});
 
 
 

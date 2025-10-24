@@ -517,17 +517,21 @@ function restaurarTextoManual() {
   const textoManual = localStorage.getItem("textoManualReporte");
   if (!textoManual) return;
 
+  // Eliminar duplicados antes de insertar
+  const titulosExistentes = hoja.querySelectorAll(".titulo-reporte");
+  if (titulosExistentes.length > 1) {
+    for (let i = 1; i < titulosExistentes.length; i++) titulosExistentes[i].remove();
+  }
+
+  // Si ya existe un título, no insertes otro
+  if (hoja.querySelector(".titulo-reporte")) return;
+
   const tabla = hoja.querySelector(".reportes-tabla");
-  if (!tabla) return;
-
-  // Si el texto ya está presente, no duplicar
-  if (hoja.innerHTML.includes(textoManual.trim())) return;
-
-  // Insertamos el texto antes de la tabla
   const contenedor = document.createElement("div");
   contenedor.innerHTML = textoManual;
-  hoja.insertBefore(contenedor, tabla);
+  hoja.insertBefore(contenedor.firstElementChild, tabla);
 }
+
 
 // Guardar texto manual cuando el usuario escriba
 document.addEventListener("input", (e) => {

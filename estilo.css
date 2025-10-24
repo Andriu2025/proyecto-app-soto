@@ -123,6 +123,88 @@ button:hover {
 }
 
 
+/* === BOTÓN DE CONTACTO FLOTANTE === */
+.contacto-flotante {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 9999;
+  text-align: center;
+}
+
+/* Botón principal */
+.btn-contacto {
+  background: linear-gradient(90deg, #00c853, #2e7d32);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(0, 255, 100, 0.6);
+  font-weight: bold;
+  animation: pulso 1.5s infinite;
+  transition: transform 0.2s;
+}
+
+.btn-contacto:hover {
+  transform: scale(1.08);
+}
+
+/* Efecto de pulso */
+@keyframes pulso {
+  0% { box-shadow: 0 0 0 0 rgba(0, 255, 100, 0.5); }
+  70% { box-shadow: 0 0 0 15px rgba(0, 255, 100, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 255, 100, 0); }
+}
+
+/* Panel oculto */
+.panel-contacto {
+  display: none;
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  padding: 10px 15px;
+  text-align: left;
+  min-width: 200px;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 0.3s ease;
+}
+
+.panel-contacto.visible {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Cada opción (WhatsApp / Email) */
+.item-contacto {
+  margin-bottom: 10px;
+}
+
+.panel-contacto a {
+  display: block;
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  transition: color 0.2s;
+}
+
+.panel-contacto a:hover {
+  color: #00c853;
+}
+
+/* Texto del número o email */
+.dato-contacto {
+  margin: 3px 0 0 25px;
+  font-size: 14px;
+  color: #555;
+}
 
 
 

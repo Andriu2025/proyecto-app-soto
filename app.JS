@@ -17,50 +17,152 @@ function mostrarLogin() {
   if (loginBox) loginBox.style.display = "block";
 }
 
-// Manejo de registro (simulado)
+// -----------------------------
+// Registro + Login seguro (CryptoJS) - reemplaza los handlers viejos
+// -----------------------------
 document.addEventListener("DOMContentLoaded", () => {
+
   const registerForm = document.getElementById("registerForm");
-  if (registerForm) {
-    registerForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      alert("Usuario registrado correctamente (aquí se guardará en la base de datos).");
-      mostrarLogin();
-    });
-  }
-
-  // Manejo inicio de sesión
   const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", function(e) {
+
+  // -------- REGISTRO (con clave maestra) --------
+  if (registerForm) {
+    registerForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const usuario = document.getElementById("usuario").value;
-      const contraseña = document.getElementById("contraseña").value;
 
-      if (usuario && contraseña) {
-        alert("Bienvenido, " + usuario);
-        // Ocultar contenedor de login/registro y mostrar menú principal
-        const contenedor1 = document.getElementById("contenedor1");
-        const menuPrincipal = document.getElementById("menuPrincipal");
-        const loginBox = document.getElementById("loginBox");
-        if (loginBox) loginBox.style.display = "none";
-        if (contenedor1) contenedor1.style.display = "none";
-        if (menuPrincipal) menuPrincipal.style.display = "block";
+      const usuario = registerForm.querySelector("input[placeholder='Usuario nuevo']").value.trim();
+      const email = registerForm.querySelector("input[placeholder='Email']").value.trim();
+      const pass = registerForm.querySelector("input[placeholder='Contraseña']").value.trim();
+      const pass2 = registerForm.querySelector("input[placeholder='Confirmar contraseña']").value.trim();
+      const codigoVerificacionInput = registerForm.querySelector("#codigoVerificacion");
+      const codigoVerificacion = codigoVerificacionInput ? codigoVerificacionInput.value.trim() : "";
 
-        // Si existe función para cargar historial/estado, llamarla
-        try {
-          if (typeof window.mostrarHistorial === "function") {
-            window.mostrarHistorial();
-          }
-          // cargarResultados queda a cargo de quien llame a mostrarResultados
-        } catch (e) {
-          console.warn("mostrarHistorial no disponible", e);
+      if (!usuario || !email || !pass || !pass2) {
+        alert("Por favor, completa todos los campos.");
+        return;
+      }
+      if (pass !== pass2) {
+        alert("Las contraseñas no coinciden.");
+        return;
+      }
+
+      const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+
+      // evitar emails repetidos
+      if (usuarios.find(u => u.email === email)) {
+        alert("Este email ya está registrado.");
+        return;
+      }
+
+      // manejar master key
+      const storedMasterHash = localStorage.getItem("masterKeyHash");
+      if (storedMasterHash) {
+        // si ya existe master => pedir codigo
+        if (!codigoVerificacion) {
+          alert("Debes ingresar el código de verificación para registrar una nueva cuenta.");
+          return;
+        }
+        const codigoHash = CryptoJS.SHA256(codigoVerificacion).toString();
+        if (codigoHash !== storedMasterHash) {
+          alert("Código de verificación incorrecto. No se puede registrar.");
+          return;
         }
       } else {
-        alert("Por favor, completa usuario y contraseña.");
+        // primera vez: crear masterKey = codigoVerificacion (si puso) o pass
+        const nuevaMaster = codigoVerificacion || pass;
+        const nuevaMasterHash = CryptoJS.SHA256(nuevaMaster).toString();
+        localStorage.setItem("masterKeyHash", nuevaMasterHash);
+        // opcional: avisar al dueño
+        alert("🔐 Clave maestra creada. Guárdala: la necesitarás para permitir futuros registros.");
       }
+
+      // cifrar contraseña con CryptoJS (misma "clave-secreta" en login)
+      const passCifrada = CryptoJS.AES.encrypt(pass, "clave-secreta").toString();
+
+      // guardar usuario
+      usuarios.push({ usuario, email, pass: passCifrada });
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+      // iniciar sesión automáticamente y mostrar menú
+      sessionStorage.setItem("usuarioActivo", usuario);
+
+      // mostrar menú
+      const contenedor1 = document.getElementById("contenedor1");
+      const loginBox = document.getElementById("loginBox");
+      const registerBox = document.getElementById("registerBox");
+      const menuPrincipal = document.getElementById("menuPrincipal");
+      if (loginBox) loginBox.style.display = "none";
+      if (registerBox) registerBox.style.display = "none";
+      if (contenedor1) contenedor1.style.display = "none";
+      if (menuPrincipal) menuPrincipal.style.display = "block";
+
+      alert("✅ Usuario registrado e iniciado en sesión correctamente.");
     });
   }
 
+  // -------- LOGIN (verifica con usuarios en localStorage) --------
+  if (loginForm) {
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const usuario = document.getElementById("usuario").value.trim();
+      const contraseña = document.getElementById("contraseña").value.trim();
+
+      if (!usuario || !contraseña) {
+        alert("Por favor, completa usuario y contraseña.");
+        return;
+      }
+
+      const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+
+      // buscar usuario por nombre (o podés cambiar a buscar por email)
+      const user = usuarios.find(u => u.usuario === usuario);
+
+      if (!user) {
+        alert("Usuario no encontrado.");
+        return;
+      }
+
+      // descifrar contraseña y comparar
+      let passDescifrada = "";
+      try {
+        passDescifrada = CryptoJS.AES.decrypt(user.pass, "clave-secreta").toString(CryptoJS.enc.Utf8);
+      } catch (err) {
+        console.error("Error al descifrar:", err);
+      }
+
+      if (passDescifrada !== contraseña) {
+        alert("Contraseña incorrecta.");
+        return;
+      }
+
+      // todo correcto: iniciar sesión
+      sessionStorage.setItem("usuarioActivo", usuario);
+
+      // mostrar menú
+      const contenedor1 = document.getElementById("contenedor1");
+      const loginBox = document.getElementById("loginBox");
+      const menuPrincipal = document.getElementById("menuPrincipal");
+      if (loginBox) loginBox.style.display = "none";
+      if (contenedor1) contenedor1.style.display = "none";
+      if (menuPrincipal) menuPrincipal.style.display = "block";
+
+      alert("Bienvenido, " + usuario);
+      // cargar historial si existe la función
+      try {
+        if (typeof window.mostrarHistorial === "function") window.mostrarHistorial();
+      } catch (e) { console.warn(e); }
+    });
+  }
+
+  // Sesión persistente en esta pestaña (si ya había)
+  const usuarioActivo = sessionStorage.getItem("usuarioActivo");
+  if (usuarioActivo) {
+    const contenedor1 = document.getElementById("contenedor1");
+    const menuPrincipal = document.getElementById("menuPrincipal");
+    if (contenedor1) contenedor1.style.display = "none";
+    if (menuPrincipal) menuPrincipal.style.display = "block";
+  }
   // Botón "Volver al menú" desde ANIMALES (usa id -> no pise otras funciones)
   const btnVolverAnimales = document.getElementById("volverMenuAnimales");
   if (btnVolverAnimales) {

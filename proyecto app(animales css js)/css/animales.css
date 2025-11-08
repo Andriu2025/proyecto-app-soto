@@ -112,6 +112,27 @@
 #animalesTable tfoot td:first-child {
   text-align: left;
 }
+#animalForm label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px; /* separa etiqueta del campo para que se vea limpio */
+}
+
+#animalForm input,
+#animalForm select {
+  height: 32px;                /* MISMA ALTURA para todos */
+  padding: 5px;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+#animalForm select {
+  margin-top: 3px; /* BAJA el select un poco para alinearlo */
+}
+
+#animalForm input {
+  margin-top: 3px; /* para que todos queden en el mismo nivel exacto */
+}
 
 
 

@@ -12,7 +12,7 @@ function mostrarAnimales() {
 // =============================
 
 let gestiones = JSON.parse(localStorage.getItem("gestiones")) || [];
-let idGestionEditando = null; // para saber si estoy editando una gestión
+let idGestionEditando = null;
 
 // =============================
 // FORMATEAR FECHA
@@ -38,7 +38,6 @@ function formatFecha(fechaStored) {
 // FUNCIONES DE TABLA (DETALLE)
 // =============================
 
-// Actualizar totales de la tabla
 function actualizarTotales() {
   const tableBody = document.querySelector("#animalesTable tbody");
   let total = 0;
@@ -48,11 +47,11 @@ function actualizarTotales() {
   Array.from(tableBody.rows).forEach(row => {
     const cantidad = parseInt(row.cells[4].textContent) || 0;
     const importe = parseFloat(row.cells[7].textContent.replace("$","").replace(/\./g,"")) || 0;
-    const impKg = parseFloat(row.cells[8].textContent) || 0;
+    const precioKg = parseFloat(row.cells[8].textContent) || 0;
 
     total += importe;
     totalCantidad += cantidad;
-    totalKg += impKg;
+    totalKg += precioKg;
   });
 
   const promedio = totalCantidad ? total / totalCantidad : 0;
@@ -65,7 +64,10 @@ function actualizarTotales() {
   document.getElementById("promedioKg").textContent = promedioKg.toLocaleString("es-AR");
 }
 
-// NUEVO: Editar fila individual
+// =============================
+// EDITAR / ELIMINAR FILAS
+// =============================
+
 window.editarFila = function(btn) {
   const fila = btn.parentElement.parentElement;
   const celdas = fila.children;
@@ -76,7 +78,7 @@ window.editarFila = function(btn) {
   document.getElementById("cantidad").value = celdas[4].textContent;
   document.getElementById("caravana").value = celdas[5].textContent;
   document.getElementById("precio").value = parseFloat(celdas[6].textContent.replace("$","").replace(/\./g,"")) || 0;
-  document.getElementById("impKg").value = parseFloat(celdas[8].textContent) || 0;
+  document.getElementById("precioKg").value = parseFloat(celdas[8].textContent) || 0;
   document.getElementById("formaPago").value = celdas[9].textContent;
   document.getElementById("cuit").value = celdas[10].textContent;
   document.getElementById("precioCombustible").value = parseFloat(celdas[11].textContent.replace("$","").replace(/\./g,"")) || 0;
@@ -87,7 +89,6 @@ window.editarFila = function(btn) {
   alert("Ahora podés editar la fila y volver a agregarla.");
 };
 
-// NUEVO: Eliminar fila individual
 window.eliminarFila = function(btn) {
   const fila = btn.parentElement.parentElement;
   fila.remove();
@@ -105,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    // Obtener valores del formulario
     const comprador = document.getElementById("comprador").value;
     const categoria = document.getElementById("categoria").value;
     const codigoCategoria = document.getElementById("codigoCategoria").value;
@@ -113,17 +113,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const cantidad = parseInt(document.getElementById("cantidad").value) || 1;
     const caravana = document.getElementById("caravana").value;
     const precio = parseFloat(document.getElementById("precio").value) || 0;
-    const impKg = parseFloat(document.getElementById("impKg").value) || 0;
+    const precioKg = parseFloat(document.getElementById("precioKg").value) || 0;
     const formaPago = document.getElementById("formaPago").value;
     const cuit = document.getElementById("cuit").value;
     const precioCombustible = parseFloat(document.getElementById("precioCombustible").value) || 0;
     const lugarEntrega = document.getElementById("lugarEntrega").value;
     const localidad = document.getElementById("localidad").value;
 
-    // Importe en $
     const importe = precio * cantidad;
 
-    // Agregar fila a la tabla con botones Editar / Eliminar
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${comprador}</td>
@@ -134,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <td>${caravana}</td>
       <td>$ ${precio.toLocaleString("es-AR")}</td>
       <td>$ ${importe.toLocaleString("es-AR")}</td>
-      <td>${impKg}</td>
+      <td>${precioKg}</td>
       <td>${formaPago}</td>
       <td>${cuit}</td>
       <td>$ ${precioCombustible.toLocaleString("es-AR")}</td>
@@ -147,21 +145,15 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     tableBody.appendChild(row);
 
-    // Actualizar totales
     actualizarTotales();
-
-    // Limpiar formulario
     form.reset();
   });
 });
 
 // =============================
-// HISTORIAL DE GESTIONES
+// GUARDAR GESTIÓN
 // =============================
 
-// =============================
-// GUARDAR GESTIÓN (con mes y año)
-// =============================
 document.getElementById("guardarGestion").addEventListener("click", () => {
   const tableBody = document.querySelector("#animalesTable tbody");
   if (!tableBody || tableBody.rows.length === 0) {
@@ -178,7 +170,7 @@ document.getElementById("guardarGestion").addEventListener("click", () => {
     caravana: row.cells[5]?.textContent,
     precio: row.cells[6]?.textContent,
     importe: row.cells[7]?.textContent,
-    impKg: row.cells[8]?.textContent,
+    precioKg: row.cells[8]?.textContent,
     formaPago: row.cells[9]?.textContent,
     cuit: row.cells[10]?.textContent,
     precioCombustible: row.cells[11]?.textContent,
@@ -188,7 +180,7 @@ document.getElementById("guardarGestion").addEventListener("click", () => {
 
   const total = detalle.reduce((acc, d) => acc + (parseFloat(d.importe.replace("$", "").replace(/\./g, "").replace(",", ".")) || 0), 0);
   const totalCantidad = detalle.reduce((acc, d) => acc + (parseInt(d.cantidad) || 0), 0);
-  const totalKg = detalle.reduce((acc, d) => acc + (parseFloat(d.impKg.replace(",", ".")) || 0), 0);
+  const totalKg = detalle.reduce((acc, d) => acc + (parseFloat(d.precioKg.replace(",", ".")) || 0), 0);
   const promedio = totalCantidad ? total / totalCantidad : 0;
   const promedioKg = totalCantidad ? totalKg / totalCantidad : 0;
 
@@ -237,7 +229,6 @@ document.getElementById("guardarGestion").addEventListener("click", () => {
   actualizarTotales();
   mostrarHistorial();
 });
-
 // =============================
 // MOSTRAR HISTORIAL AGRUPADO POR MES (versión actualizada - envío a reportes seguro)
 // =============================
@@ -341,7 +332,7 @@ function mostrarHistorial() {
             Caravana: ${d.caravana} | 
             Precio: ${d.precio} | 
             Importe: ${d.importe} | 
-            Kg: ${d.impKg} | 
+            Precio x Kilo: ${d.precioKg} | 
             Pago: ${d.formaPago} | 
             CUIT: ${d.cuit} | 
             Combustible: ${d.precioCombustible} | 
@@ -428,10 +419,9 @@ function mostrarHistorial() {
     document.getElementById("btnLimpiarFiltro").addEventListener("click", () => {
       document.getElementById("filtroMes").value = "";
       document.getElementById("filtroAnio").value = "";
-      mostrarHistorial(); // recarga completo
+      mostrarHistorial();
     });
   }
-
 
   // =============================
   // Panel Confirmar y Cancelar
@@ -457,9 +447,6 @@ function mostrarHistorial() {
 
     document.getElementById("historial").insertBefore(panelReportes, document.getElementById("listaHistorial"));
 
-    // =============================
-    // Eventos Confirmar / Cancelar
-    // =============================
     btnCancelar.addEventListener("click", () => {
       document.querySelectorAll(".checkMes, .checkGestion").forEach(chk => chk.style.display = "none");
       panelReportes.style.display = "none";
@@ -479,17 +466,13 @@ function mostrarHistorial() {
         return;
       }
 
-      // =============================
-      // Envío al reporte (HOJA ÚNICA - SIN PAGINACIÓN AUTOMÁTICA)
-      // =============================
-      // Obtener o crear la hoja última (hoja única que se alarga)
+      // Envío al reporte
       let hojaActual = document.querySelector(".reportes-hoja-wrap .reportes-hoja:last-child");
       if (!hojaActual) {
         hojaActual = crearNuevaHoja();
         document.querySelector(".reportes-hoja-wrap").appendChild(hojaActual);
       }
 
-      // Asegurarse de que exista el contenedor de gestiones
       let contenedorGestiones = hojaActual.querySelector(".reportes-gestiones");
       if (!contenedorGestiones) {
         contenedorGestiones = document.createElement("div");
@@ -497,7 +480,6 @@ function mostrarHistorial() {
         hojaActual.appendChild(contenedorGestiones);
       }
 
-      // Agregar cada gestión directamente al contenedor de gestiones (sin clonar nodos del historial)
       gestionesSeleccionadas.forEach(g => {
         let detalleHTML = "<ul>";
         g.detalle.forEach(d => {
@@ -509,6 +491,7 @@ function mostrarHistorial() {
               Caravana: ${d.caravana} | 
               Precio: ${d.precio} | 
               Importe: ${d.importe} | 
+              Precio x Kilo: ${d.precioKg} | 
               Pago: ${d.formaPago}
             </li>`;
         });
@@ -523,18 +506,9 @@ function mostrarHistorial() {
           <hr>
         `;
 
-        // Insertar HTML directamente: mantiene los listeners externos intactos
         contenedorGestiones.insertAdjacentHTML('beforeend', contenido);
       });
 
-      // Reordenar solo los contenedores principales para asegurar el orden visual:
-      const tabla = hojaActual.querySelector(".reportes-tabla");
-      const estadisticas = hojaActual.querySelector(".reportes-estadisticas");
-      if (tabla) hojaActual.appendChild(tabla);
-      if (contenedorGestiones) hojaActual.appendChild(contenedorGestiones);
-      if (estadisticas) hojaActual.appendChild(estadisticas);
-
-      // Mostrar la sección de reportes (sin alterar nada más)
       if (typeof mostrarReportes === "function") {
         mostrarReportes();
       } else {
@@ -546,21 +520,16 @@ function mostrarHistorial() {
         if (reportesEl) reportesEl.style.display = "block";
       }
 
-      // Limpiar visuales del historial (ocultar checks)
       document.querySelectorAll(".checkMes, .checkGestion").forEach(chk => {
         chk.style.display = "none";
         chk.checked = false;
       });
       panelReportes.style.display = "none";
 
-      // Guardar cambios en reportes
       if (typeof guardarReportes === "function") guardarReportes();
     });
   }
 
-  // =============================
-  // Botón Agregar a Reportes
-  // =============================
   const btnAgregarReportes = document.getElementById("abrirSeleccionReportes");
   if (btnAgregarReportes) {
     btnAgregarReportes.addEventListener("click", () => {
@@ -570,29 +539,22 @@ function mostrarHistorial() {
   }
 }
 
-
-
-//nueva función para borrar gestión y refrescar vista
+// ===================================
+// BORRAR, VER, EDITAR Y ELIMINAR GESTIONES
+// ===================================
 function borrarGestion(id) {
   let gestiones = JSON.parse(localStorage.getItem("gestiones")) || [];
   gestiones = gestiones.filter(g => g.id !== id);
   localStorage.setItem("gestiones", JSON.stringify(gestiones));
-
-  mostrarHistorial(); // refresca historial
-  recargarTodo();     // refresca resultados + estadísticas
+  mostrarHistorial();
+  recargarTodo();
 }
 
-// =============================
-// GESTIONES (VER, EDITAR, ELIMINAR)
-// =============================
-
-// VER GESTIÓN
 window.verGestion = function (id) {
   const gestion = gestiones.find(g => g.id === id);
   if (gestion) {
     const tableBody = document.querySelector("#animalesTable tbody");
-    tableBody.innerHTML = ""; // limpiar tabla antes de mostrar
-
+    tableBody.innerHTML = "";
     gestion.detalle.forEach(d => {
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -604,7 +566,7 @@ window.verGestion = function (id) {
         <td>${d.caravana}</td>
         <td>${d.precio}</td>
         <td>${d.importe}</td>
-        <td>${d.impKg}</td>
+        <td>${d.precioKg}</td>
         <td>${d.formaPago}</td>
         <td>${d.cuit}</td>
         <td>${d.precioCombustible}</td>
@@ -617,17 +579,15 @@ window.verGestion = function (id) {
       `;
       tableBody.appendChild(row);
     });
-    actualizarTotales(); // recalcular al cargar la gestión
+    actualizarTotales();
   }
 };
 
-// EDITAR GESTIÓN
 window.editarGestion = function (id) {
   const gestion = gestiones.find(g => g.id === id);
   if (gestion) {
     const tableBody = document.querySelector("#animalesTable tbody");
-    tableBody.innerHTML = ""; // limpiar tabla antes de cargar la gestión
-
+    tableBody.innerHTML = "";
     gestion.detalle.forEach(d => {
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -639,7 +599,7 @@ window.editarGestion = function (id) {
         <td>${d.caravana}</td>
         <td>${d.precio}</td>
         <td>${d.importe}</td>
-        <td>${d.impKg}</td>
+        <td>${d.precioKg}</td>
         <td>${d.formaPago}</td>
         <td>${d.cuit}</td>
         <td>${d.precioCombustible}</td>
@@ -652,27 +612,21 @@ window.editarGestion = function (id) {
       `;
       tableBody.appendChild(row);
     });
-
-    idGestionEditando = id; // ✅ Guardar el ID de la gestión
+    idGestionEditando = id;
     actualizarTotales();
     alert("Ahora podés editar la gestión y volver a guardarla.");
   }
 };
 
-// ELIMINAR GESTIÓN
 window.eliminarGestion = function (id) {
   const gestion = gestiones.find(g => g.id === id);
   if (!gestion) return;
-
   const confirmar = confirm(`¿Seguro que querés eliminar la gestión del ${formatFecha(gestion.fecha)}?`);
   if (!confirmar) return;
-
   gestiones = gestiones.filter(g => g.id !== id);
   mostrarHistorial();
-
   alert("Gestión eliminada correctamente ✅");
 };
-
 
 // =============================
 // FUNCIÓN FILTRAR HISTORIAL
@@ -680,20 +634,17 @@ window.eliminarGestion = function (id) {
 function filtrarHistorial(mes, anio) {
   let gestiones = JSON.parse(localStorage.getItem("gestiones")) || [];
   let filtradas = gestiones;
-
   if (mes) filtradas = filtradas.filter(g => g.mes === mes);
   if (anio) filtradas = filtradas.filter(g => g.anio == anio);
-
   if (filtradas.length === 0) {
     alert("No se encontraron gestiones para ese mes/año.");
     return;
   }
-
-  // mostrar solo las filtradas (reutilizando el render)
   const original = gestiones;
   window.gestiones = filtradas;
   mostrarHistorial();
-  window.gestiones = original; // restaurar
+  window.gestiones = original;
 }
+
 
 

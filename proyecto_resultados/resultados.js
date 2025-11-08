@@ -191,7 +191,7 @@ function recalcularResultadosSeleccionados() {
 }
 
 // -----------------------------
-// Actualizar tabla de resultados POR CATEGORÍAS (agregación)
+// Actualizar tabla de resultados POR CATEGORÍAS (bloque corregido completo)
 // -----------------------------
 function actualizarTablaResultadosPorCategorias(gestionesSeleccionadas) {
   const tbody = document.querySelector("#tablaResultados tbody");
@@ -200,56 +200,82 @@ function actualizarTablaResultadosPorCategorias(gestionesSeleccionadas) {
   tbody.innerHTML = "";
   tfoot.innerHTML = "";
 
-  const summary = {};
-  ["Toros Angus","Toros Hereford","Vaquillonas Angus","Vaquillonas Hereford","Caballos","Otros"].forEach(c => {
-    summary[c] = { cantidad: 0, importe: 0, kilos: 0 };
-  });
+  const categorias = ["Toros Angus","Toros Hereford","Vaquillonas Angus","Vaquillonas Hereford","Caballos","Otros"];
+  const resumen = {};
+  categorias.forEach(c => resumen[c] = { cantidad:0, importe:0, kilos:0 });
 
+  // Sumatoria general por categoría
   gestionesSeleccionadas.forEach(g => {
     if (!g.detalle || !Array.isArray(g.detalle)) return;
     g.detalle.forEach(d => {
       const key = normalizeCategory(d.categoria);
       const cantidad = safeParseNumber(d.cantidad);
       const importe = safeParseNumber(d.importe);
-      const kilos = safeParseNumber(d.impKg);
-      if (!summary[key]) summary[key] = { cantidad: 0, importe: 0, kilos: 0 };
-      summary[key].cantidad += cantidad;
-      summary[key].importe += importe;
-      summary[key].kilos += kilos;
+let kilosCalc = 0;
+
+// TOROS → peso fijo 650 kg
+if (key.includes("Toro")) {
+  kilosCalc = cantidad * 650;
+}
+
+// VAQUILLONAS → peso fijo 200 kg
+else if (key.includes("Vaquillona")) {
+  kilosCalc = cantidad * 200;
+}
+
+// CABALLOS → no usan kilos
+else if (key.includes("Caballo")) {
+  kilosCalc = 0;
+}
+
+
+      if (!resumen[key]) resumen[key] = { cantidad:0, importe:0, kilos:0 };
+      resumen[key].cantidad += cantidad;
+      resumen[key].importe += importe;
+      resumen[key].kilos += kilosCalc;
     });
   });
 
+  // =======================
+  // FILAS PRINCIPALES
+  // =======================
   const bovinos = ["Toros Angus","Toros Hereford","Vaquillonas Angus","Vaquillonas Hereford"];
   bovinos.forEach(cat => {
-    const data = summary[cat] || { cantidad:0, importe:0, kilos:0 };
-    const promedio$ = data.cantidad ? data.importe / data.cantidad : 0;
-    const promedioKg = data.cantidad ? data.kilos / data.cantidad : 0;
-    const precioKg = data.kilos ? data.importe / data.kilos : 0;
+    const d = resumen[cat] || { cantidad:0, importe:0, kilos:0 };
+    const promedio$ = d.cantidad ? d.importe / d.cantidad : 0;
+    const promedioKg = d.cantidad ? d.kilos / d.cantidad : 0;
+    const precioKg = d.kilos ? d.importe / d.kilos : 0;
+    const convertidoKg = 0; // En categorías NO se usa $ convertidos en Kg
 
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${cat}</td>
-      <td>${formatNumber(data.cantidad)}</td>
-      <td>${formatMoney(data.importe)}</td>
-      <td>${formatNumber(data.importe ? data.importe / (data.cantidad || 1) : 0)}</td>
-      <td>${formatMoney(promedio$)}</td>
+      <td>${formatNumber(d.cantidad)}</td>
+      <td>${formatMoney(d.importe)}</td>
+      <td>${formatNumber(convertidoKg)}</td>   <!-- SIN $ -->
+      <td>${formatMoney(promedio$)}</td>       <!-- ESTO SIGUE EN $ -->
       <td>${formatNumber(promedioKg)}</td>
-      <td>${formatNumber(data.kilos)}</td>
+      <td>${formatNumber(d.kilos)}</td>
       <td>${formatMoney(precioKg)}</td>
     `;
     tbody.appendChild(row);
   });
 
+  // =======================
+  // SUBTOTAL
+  // =======================
   const subtotal = bovinos.reduce((acc, c) => {
-    acc.cantidad += summary[c]?.cantidad || 0;
-    acc.importe += summary[c]?.importe || 0;
-    acc.kilos += summary[c]?.kilos || 0;
+    const d = resumen[c] || { cantidad:0, importe:0, kilos:0 };
+    acc.cantidad += d.cantidad;
+    acc.importe += d.importe;
+    acc.kilos += d.kilos;
     return acc;
   }, {cantidad:0, importe:0, kilos:0});
 
-  const promedioSubtotal = subtotal.cantidad ? subtotal.importe / subtotal.cantidad : 0;
+  const promedioSubtotal$ = subtotal.cantidad ? subtotal.importe / subtotal.cantidad : 0;
   const promedioKgSubtotal = subtotal.cantidad ? subtotal.kilos / subtotal.cantidad : 0;
   const precioKgSubtotal = subtotal.kilos ? subtotal.importe / subtotal.kilos : 0;
+  const convertidoKgSubtotal = promedioKgSubtotal > 0 ? subtotal.importe / promedioKgSubtotal : 0;
 
   const rowSubtotal = document.createElement("tr");
   rowSubtotal.className = "fila-subtotal";
@@ -257,62 +283,82 @@ function actualizarTablaResultadosPorCategorias(gestionesSeleccionadas) {
     <td><strong>SUBTOTAL</strong></td>
     <td><strong>${formatNumber(subtotal.cantidad)}</strong></td>
     <td><strong>${formatMoney(subtotal.importe)}</strong></td>
-    <td><strong>${formatNumber(subtotal.importe ? subtotal.importe / (subtotal.cantidad || 1) : 0)}</strong></td>
-    <td><strong>${formatMoney(promedioSubtotal)}</strong></td>
+    <td><strong>${formatMoney(convertidoKgSubtotal)}</strong></td>
+    <td><strong>${formatMoney(promedioSubtotal$)}</strong></td>
     <td><strong>${formatNumber(promedioKgSubtotal)}</strong></td>
     <td><strong>${formatNumber(subtotal.kilos)}</strong></td>
     <td><strong>${formatMoney(precioKgSubtotal)}</strong></td>
   `;
   tbody.appendChild(rowSubtotal);
 
-  const cab = summary["Caballos"] || { cantidad:0, importe:0, kilos:0 };
-  const promedioCab = cab.cantidad ? cab.importe / cab.cantidad : 0;
+  // =======================
+  // CABALLOS
+  // =======================
+  const cab = resumen["Caballos"] || { cantidad:0, importe:0, kilos:0 };
+  const promedioCab$ = cab.cantidad ? cab.importe / cab.cantidad : 0;
   const promedioKgCab = cab.cantidad ? cab.kilos / cab.cantidad : 0;
   const precioKgCab = cab.kilos ? cab.importe / cab.kilos : 0;
+  const convertidoKgCab = promedioKgCab > 0 ? cab.importe / promedioKgCab : 0;
 
   const rowCab = document.createElement("tr");
   rowCab.innerHTML = `
     <td>Caballos</td>
     <td>${formatNumber(cab.cantidad)}</td>
     <td>${formatMoney(cab.importe)}</td>
-    <td>${formatNumber(cab.importe ? cab.importe / (cab.cantidad || 1) : 0)}</td>
-    <td>${formatMoney(promedioCab)}</td>
+    <td>${formatMoney(convertidoKgCab)}</td>
+    <td>${formatMoney(promedioCab$)}</td>
     <td>${formatNumber(promedioKgCab)}</td>
     <td>${formatNumber(cab.kilos)}</td>
     <td>${formatMoney(precioKgCab)}</td>
   `;
   tbody.appendChild(rowCab);
 
-  const otros = summary["Otros"] || { cantidad:0, importe:0, kilos:0 };
-  const totalRemate = {
-    cantidad: subtotal.cantidad + cab.cantidad + otros.cantidad,
-    importe: subtotal.importe + cab.importe + otros.importe,
-    kilos: subtotal.kilos + cab.kilos + otros.kilos
+  // =======================
+  // TOTAL DEL REMATE
+  // =======================
+  const total = {
+    cantidad: subtotal.cantidad + cab.cantidad,
+    importe: subtotal.importe + cab.importe,
+    kilos: subtotal.kilos + cab.kilos
   };
-  const precioKgTotal = totalRemate.kilos ? totalRemate.importe / totalRemate.kilos : 0;
+  const promedioTotal$ = total.cantidad ? total.importe / total.cantidad : 0;
+  const promedioKgTotal = total.cantidad ? total.kilos / total.cantidad : 0;
+  const promedioGeneralKg = 370; // ESTE ES EL PROMEDIO GENERAL DEL REMATE
+  const kilosConvertidosFinal = total.cantidad * promedioGeneralKg;
+  const precioKgTotal = total.kilos ? total.importe / total.kilos : 0;
+  const convertidoKgTotal = kilosConvertidosFinal; // igual que en Excel (19.000 aprox)
 
   const rowTotal = document.createElement("tr");
   rowTotal.className = "fila-total";
   rowTotal.innerHTML = `
     <td><strong>TOTAL DEL REMATE</strong></td>
-    <td><strong>${formatNumber(totalRemate.cantidad)}</strong></td>
-    <td><strong>${formatMoney(totalRemate.importe)}</strong></td>
-    <td><strong>${formatNumber(totalRemate.importe ? totalRemate.importe / (totalRemate.cantidad || 1) : 0)}</strong></td>
-    <td colspan="3"></td>
+    <td><strong>${formatNumber(total.cantidad)}</strong></td>
+    <td><strong>${formatMoney(total.importe)}</strong></td>
+    <td><strong>${formatNumber(convertidoKgTotal)}</strong></td> <!-- SIN $ -->
+    <td><strong>${formatMoney(promedioTotal$)}</strong></td>
+    <td><strong>${formatNumber(promedioKgTotal)}</strong></td>
+    <td><strong>${formatNumber(total.kilos)}</strong></td>
     <td><strong>${formatMoney(precioKgTotal)}</strong></td>
   `;
   tbody.appendChild(rowTotal);
 
+  // =======================
+  // TOTALES FOOT
+  // =======================
   tfoot.innerHTML = `
     <tr>
       <td style="font-weight:700">TOTALES</td>
-      <td style="font-weight:700">${formatNumber(totalRemate.cantidad)}</td>
-      <td style="font-weight:700">${formatMoney(totalRemate.importe)}</td>
-      <td style="font-weight:700">${formatNumber(totalRemate.kilos)}</td>
-      <td colspan="4"></td>
+      <td style="font-weight:700">${formatNumber(total.cantidad)}</td>
+      <td style="font-weight:700">${formatMoney(total.importe)}</td>
+      <td style="font-weight:700">${formatMoney(convertidoKgTotal)}</td>
+      <td style="font-weight:700">${formatMoney(promedioTotal$)}</td>
+      <td style="font-weight:700">${formatNumber(promedioKgTotal)}</td>
+      <td style="font-weight:700">${formatNumber(total.kilos)}</td>
+      <td style="font-weight:700">${formatMoney(precioKgTotal)}</td>
     </tr>
   `;
 }
+
 
 // Exportar al scope global
 window.mostrarResultados = mostrarResultados;

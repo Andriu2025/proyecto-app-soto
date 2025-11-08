@@ -107,8 +107,16 @@
       <label>Cantidad: <input type="number" id="cantidad" min="1" value="1" required></label>
       <label>Números (Caravanas): <input type="text" id="caravana" placeholder="Ej: 324-235-345"></label>
       <label>Precio por Cabeza: <input type="number" id="precio" step="0.01" required></label>
-      <label>Importe en Kg: <input type="number" id="impKg" step="0.01"></label>
-      <label>Forma de Pago: <input type="text" id="formaPago"></label>
+      <label>Importe por Kilo: <input type="number" id="precioKg" step="0.01" placeholder="Ej: 2290.89"></label>
+      <label>Forma de Pago:
+      <select id="formaPago" required>
+        <option value="">-- Seleccionar --</option>
+        <option value="Efectivo">Efectivo</option>
+        <option value="Transferencia">Transferencia</option>
+        <option value="Cheque">Cheque</option>
+        <option value="Otro">Otro</option>
+      </select>
+      </label>
       <label>CUIT: <input type="text" id="cuit"></label>
       <label>Precio x Combustible: <input type="number" id="precioCombustible" step="0.01"></label>
       <label>Lugar de Entrega: <input type="text" id="lugarEntrega"></label>
@@ -166,7 +174,7 @@
           <th>Detalle</th>
           <th>Cantidad</th>
           <th>Importe en $</th>
-          <th>$ convertidos en Kg</th>
+          <th> convertidos en Kg</th>
           <th>Promedio $</th>
           <th>Promedio Kg</th>
           <th>Kilos Reales Vendidos</th>
